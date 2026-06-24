@@ -10,7 +10,7 @@ export default function ScoreCircle({ score, size = 120 }) {
   return (
     <div className="flex flex-col items-center gap-1">
       <svg width={size} height={size}>
-        {/* Background circle */}
+   
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -19,7 +19,7 @@ export default function ScoreCircle({ score, size = 120 }) {
           stroke="#e5e7eb"
           strokeWidth="8"
         />
-        {/* Progress circle */}
+    
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -33,7 +33,7 @@ export default function ScoreCircle({ score, size = 120 }) {
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
           style={{ transition: "stroke-dashoffset 0.8s ease" }}
         />
-        {/* Score text */}
+
         <text
           x="50%"
           y="50%"

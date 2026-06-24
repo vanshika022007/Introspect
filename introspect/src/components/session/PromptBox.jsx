@@ -1,21 +1,21 @@
-// components/session/PromptBox.jsx
-// Shows the current AI question with a speaker icon
+
+
 
 export default function PromptBox({ question, isSpeaking }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-start gap-4">
-        {/* Speaker icon */}
+   
         <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isSpeaking ? "bg-violet-600 animate-pulse" : "bg-violet-100"}`}>
           <span className="text-lg">{isSpeaking ? "🔊" : "🔈"}</span>
         </div>
-        {/* Question text */}
+
         <p className="text-gray-800 font-semibold text-lg leading-snug">
           {question || "Loading question..."}
         </p>
       </div>
 
-      {/* Audio wave animation (purely visual) */}
+
       {isSpeaking && (
         <div className="mt-4 flex items-center gap-1 px-2">
           {Array.from({ length: 28 }).map((_, i) => (

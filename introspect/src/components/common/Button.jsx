@@ -1,4 +1,4 @@
-// components/common/Button.jsx
+// // components/common/Button.jsx
 
 export default function Button({ children, onClick, className = "", variant = "primary", disabled = false, type = "button" }) {
   const base = "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 cursor-pointer";

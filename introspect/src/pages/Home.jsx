@@ -1,4 +1,4 @@
-// pages/Home.jsx
+
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/layout/Layout";
 import { getAllReports } from "../utils/Storage";
@@ -9,7 +9,7 @@ export default function Home() {
   const navigate = useNavigate();
   const reports = getAllReports();
 
-  // Compute stats from real data
+
   const totalInterviews = reports.length;
   const avgScore =
     totalInterviews > 0
@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <Layout>
       <div className="max-w-3xl mx-auto">
-        {/* Welcome Banner */}
+      
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-6 flex items-center justify-between">
           <div>
             <p className="text-gray-500 text-sm mb-1">Welcome back,</p>
@@ -39,7 +39,7 @@ export default function Home() {
               Practice smart. Speak better. Get better.
             </p>
           </div>
-          {/* Robot illustration */}
+  
           <div className="hidden sm:flex flex-col items-center">
             <div className="relative">
               <div className="absolute -top-6 -right-4 bg-violet-500 rounded-2xl px-3 py-1.5 text-white text-sm font-bold shadow-lg">
@@ -50,7 +50,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Quick Stats */}
+     
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
           <h2 className="font-bold text-gray-800 mb-4">Quick Stats</h2>
           {totalInterviews === 0 ? (
@@ -84,7 +84,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* Recent Reports */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-gray-800">Recent Interview Reports</h2>

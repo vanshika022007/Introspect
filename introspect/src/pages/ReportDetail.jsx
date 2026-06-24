@@ -1,4 +1,4 @@
-// pages/ReportDetail.jsx
+
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/layout/Layout";
@@ -33,7 +33,7 @@ export default function ReportDetail() {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
-        {/* Back + Title */}
+        
         <div className="flex items-center gap-3 mb-6">
           <button
             onClick={() => navigate("/reports")}
@@ -51,7 +51,7 @@ export default function ReportDetail() {
           </div>
         </div>
 
-        {/* Tabs */}
+      
         <div className="flex gap-6 border-b border-gray-200 mb-6">
           {tabs.map((tab) => (
             <button
@@ -68,10 +68,9 @@ export default function ReportDetail() {
           ))}
         </div>
 
-        {/* Overview Tab */}
         {activeTab === "overview" && (
           <div>
-            {/* Overall score + sub scores */}
+   
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <div className="flex flex-col items-center">
@@ -104,13 +103,13 @@ export default function ReportDetail() {
               </div>
             </div>
 
-            {/* Summary */}
+      
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
               <h3 className="font-bold text-gray-800 mb-2">Summary</h3>
               <p className="text-gray-600 text-sm leading-relaxed">{feedback?.summary}</p>
             </div>
 
-            {/* Strengths & Weaknesses */}
+        
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="bg-green-50 rounded-2xl border border-green-100 p-4">
                 <h3 className="font-bold text-green-700 mb-2 text-sm">✅ Strengths</h3>
@@ -130,7 +129,7 @@ export default function ReportDetail() {
               </div>
             </div>
 
-            {/* Improvement Tips */}
+ 
             <div className="bg-violet-50 rounded-2xl border border-violet-100 p-5">
               <h3 className="font-bold text-violet-800 mb-3 text-sm">💡 Improvement Tips</h3>
               <ul className="flex flex-col gap-2">
@@ -144,7 +143,7 @@ export default function ReportDetail() {
           </div>
         )}
 
-        {/* Answers Tab */}
+  
         {activeTab === "answers" && (
           <div className="flex flex-col gap-4">
             {(conversation || []).map((item, i) => (
@@ -166,7 +165,7 @@ export default function ReportDetail() {
           </div>
         )}
 
-        {/* Feedback Tab */}
+
         {activeTab === "feedback" && (
           <div className="flex flex-col gap-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">

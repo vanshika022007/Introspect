@@ -1,4 +1,4 @@
-// components/layout/Sidebar.jsx
+
 import { NavLink } from "react-router-dom";
 
 const navItems = [
@@ -10,7 +10,7 @@ const navItems = [
 export default function Sidebar() {
   return (
     <aside className="w-60 min-h-screen bg-[#1a1033] flex flex-col py-6 px-4 shrink-0">
-      {/* Logo */}
+
       <div className="flex items-center gap-2 mb-10 px-2">
         <div className="w-9 h-9 rounded-xl bg-violet-500 flex items-center justify-center text-white text-lg">
           🎙
@@ -18,7 +18,6 @@ export default function Sidebar() {
         <span className="text-white font-bold text-xl tracking-tight">Introspect</span>
       </div>
 
-      {/* Nav Items */}
       <nav className="flex flex-col gap-1 flex-1">
         {navItems.map((item) => (
           <NavLink
@@ -39,7 +38,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Bottom CTA */}
+     
       <div className="mt-auto">
         <div className="bg-white/5 rounded-2xl p-4 text-center mb-3">
           <p className="text-white text-sm font-semibold">Ready to practice?</p>

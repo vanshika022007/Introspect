@@ -1,111 +1,146 @@
-const API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-sonnet-4-20250514";
- 
-// Helper to make a call to Claude API
-async function callClaude(systemPrompt, userMessage) {
-  const response = await fetch(API_URL, {
+const API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+const API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+
+
+async function callGroq(messages) {
+  const res = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
     },
     body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 1000,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userMessage }],
+      model: "llama-3.1-8b-instant",
+      messages,
+      temperature: 0.6,
     }),
   });
- 
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err?.error?.message || "API call failed");
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.error?.message || "API Error");
   }
- 
-  const data = await response.json();
-  return data.content[0].text;
+
+  return data?.choices?.[0]?.message?.content;
 }
- 
-// Generate the first question for an interview
+
+
 export async function generateFirstQuestion(config) {
-  const systemPrompt = `You are an AI interviewer conducting a ${config.role} interview.
-Interviewer style: ${config.style} (${config.styleDesc})
-Candidate level: ${config.level} (${config.levelDesc})
- 
-Rules:
-- Ask ONLY ONE interview question at a time.
-- Keep the question relevant to the role and level.
-- If style is Friendly, be warm and encouraging.
-- If style is Professional, be formal and concise.
-- If style is Strict, be direct and challenging.
-- Return ONLY the question, no extra text, no numbering.`;
- 
-  const userMessage = `Start the interview. Ask the first question for a ${config.role} candidate at ${config.level} level.`;
- 
-  return await callClaude(systemPrompt, userMessage);
+  const prompt = `
+You are a professional interviewer.
+
+RULES:
+- Ask ONLY ONE question
+- DO NOT include introduction
+- DO NOT write steps or instructions
+- DO NOT explain anything
+
+Start interview directly.
+
+Role: ${config.role}
+Level: ${config.level}
+Style: ${config.style}
+
+Ask a simple first question like:
+"Tell me about yourself."
+`;
+
+  return callGroq([{ role: "user", content: prompt }]);
 }
- 
-// Generate the next question based on conversation history
-export async function generateNextQuestion(config, conversationHistory) {
-  const systemPrompt = `You are an AI interviewer conducting a ${config.role} interview.
-Interviewer style: ${config.style}
-Candidate level: ${config.level}
- 
-Rules:
-- Ask ONLY ONE follow-up question based on the candidate's previous answer.
-- The question must be relevant to what they said AND the role.
-- Progressively go deeper or explore new areas.
-- Return ONLY the question, no extra text.
-- If the interview has had 8+ exchanges, you can ask a final wrap-up question.`;
- 
-  // Build conversation summary for context
-  const historyText = conversationHistory
-    .map((item) => `Q: ${item.question}\nA: ${item.answer}`)
-    .join("\n\n");
- 
-  const userMessage = `Here is the interview so far:\n\n${historyText}\n\nGenerate the next interview question.`;
- 
-  return await callClaude(systemPrompt, userMessage);
+
+
+export async function generateNextQuestion(config, conversation) {
+  const prompt = `
+You are an interviewer.
+
+Ask ONLY ONE next question based on conversation.
+
+RULES:
+- Only one question
+- No explanation
+- No extra text
+
+Conversation:
+${JSON.stringify(conversation)}
+
+Role: ${config.role}
+`;
+
+  return callGroq([{ role: "user", content: prompt }]);
 }
- 
-// Generate a full feedback report after the interview ends
-export async function generateFeedback(config, conversationHistory) {
-  const systemPrompt = `You are an expert interview evaluator. Analyze the interview and return a JSON report.
-Return ONLY valid JSON, no markdown, no explanation.
- 
+
+
+export async function generateFeedback(config, conversation, durationSeconds = 0) {
+  const hasAnswers = conversation?.some((c) => c.answer?.trim());
+
+  if (!hasAnswers) {
+    return {
+      overallScore: 0,
+      clarity: 0,
+      consistency: 0,
+      responseLength: 0,
+      confidence: 0,
+      technical: 0,
+      timeManagement: 0,
+      summary: "No answers were given.",
+      strengths: [],
+      weaknesses: ["No participation"],
+      improvementTips: ["Try answering questions"],
+    };
+  }
+
+  const prompt = `
+You are an expert interviewer.
+
+Return ONLY valid JSON.
+
+IMPORTANT:
+- Do NOT hallucinate high scores
+- Base scores ONLY on real answers
+- If answers are weak → low score
+
 JSON format:
 {
-  "overallScore": <number 0-100>,
-  "clarity": <number 0-100>,
-  "consistency": <number 0-100>,
-  "responseLength": <number 0-100>,
-  "confidence": <number 0-100>,
-  "technicalClarity": <number 0-100>,
-  "strengths": [<string>, <string>, <string>],
-  "weaknesses": [<string>, <string>, <string>],
-  "summary": "<2-3 sentence summary>",
-  "improvementTips": [<string>, <string>, <string>]
-}`;
- 
-  const historyText = conversationHistory
-    .map((item, i) => `Q${i + 1}: ${item.question}\nA${i + 1}: ${item.answer}`)
-    .join("\n\n");
- 
-  const userMessage = `Role: ${config.role}, Level: ${config.level}, Style: ${config.style}
- 
-Interview transcript:
-${historyText}
- 
-Evaluate this candidate and return the JSON report.`;
- 
-  const raw = await callClaude(systemPrompt, userMessage);
- 
-  // Parse JSON safely
+  "overallScore": number,
+  "clarity": number,
+  "consistency": number,
+  "responseLength": number,
+  "confidence": number,
+  "technical": number,
+  "timeManagement": number,
+  "summary": string,
+  "strengths": [],
+  "weaknesses": [],
+  "improvementTips": []
+}
+
+Conversation:
+${JSON.stringify(conversation)}
+
+Duration: ${durationSeconds}s
+`;
+
   try {
-    return JSON.parse(raw);
-  } catch {
-    // Try to extract JSON from response
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error("Could not parse feedback JSON");
+    const result = await callGroq([
+      { role: "user", content: prompt },
+    ]);
+
+    return JSON.parse(result);
+  } catch (err) {
+    return {
+      overallScore: 0,
+      clarity: 0,
+      consistency: 0,
+      responseLength: 0,
+      confidence: 0,
+      technical: 0,
+      timeManagement: 0,
+      summary: "Error generating feedback",
+      strengths: [],
+      weaknesses: [],
+      improvementTips: [],
+    };
   }
 }

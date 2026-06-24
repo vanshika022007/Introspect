@@ -1,22 +1,27 @@
-// components/session/Timer.jsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export default function Timer({ running }) {
-  const [seconds, setSeconds] = useState(0);
+export default function Timer({ duration = 30, onEnd }) {
+  const [timeLeft, setTimeLeft] = useState(duration * 60);
 
   useEffect(() => {
-    if (!running) return;
-    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
-    return () => clearInterval(id);
-  }, [running]);
+    if (timeLeft <= 0) {
+      onEnd?.();
+      return;
+    }
 
-  const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const ss = String(seconds % 60).padStart(2, "0");
+    const interval = setInterval(() => {
+      setTimeLeft((t) => t - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
+  const min = Math.floor(timeLeft / 60);
+  const sec = timeLeft % 60;
 
   return (
-    <div className="flex items-center gap-1.5 text-violet-600 font-mono font-semibold text-sm">
-      <span>⏱</span>
-      <span>{mm}:{ss}</span>
+    <div className="text-sm font-semibold text-gray-600">
+      ⏱ {min}:{sec < 10 ? "0" : ""}{sec}
     </div>
   );
 }

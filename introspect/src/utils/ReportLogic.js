@@ -28,14 +28,14 @@ export function getScoreLabelColor(score) {
   return "text-red-500";
 }
 
-// Format duration in seconds to mm:ss
+
 export function formatDuration(seconds) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m} min${m !== 1 ? "s" : ""}`;
 }
 
-// Format a date nicely
+
 export function formatDate(isoString) {
   const date = new Date(isoString);
   return date.toLocaleDateString("en-US", {

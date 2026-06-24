@@ -1,4 +1,4 @@
-// pages/NewInterview.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/layout/Layout";
@@ -19,14 +19,14 @@ export default function NewInterview() {
       style: selectedStyle,
       styleDesc: STYLES.find((s) => s.value === selectedStyle)?.desc || "",
     };
-    // Pass config via state to Session page
+  
     navigate("/session", { state: { config } });
   }
 
   return (
     <Layout>
       <div className="max-w-xl mx-auto">
-        {/* Header */}
+     
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => navigate("/")}
@@ -42,7 +42,7 @@ export default function NewInterview() {
           </div>
         </div>
 
-        {/* Step 1: Role */}
+        
         <div className="mb-8">
           <p className="font-semibold text-gray-800 mb-3">
             1. Choose Category / Role
@@ -68,7 +68,7 @@ export default function NewInterview() {
           </div>
         </div>
 
-        {/* Step 2: Level */}
+       
         <div className="mb-8">
           <p className="font-semibold text-gray-800 mb-3">2. Interview Level</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -89,7 +89,7 @@ export default function NewInterview() {
           </div>
         </div>
 
-        {/* Step 3: Style */}
+      
         <div className="mb-8">
           <p className="font-semibold text-gray-800 mb-3">3. Interviewer Style</p>
           <div className="grid grid-cols-3 gap-3">
@@ -113,13 +113,13 @@ export default function NewInterview() {
           </div>
         </div>
 
-        {/* Info note */}
+     
         <div className="flex items-center gap-2 bg-violet-50 rounded-xl px-4 py-3 mb-6 text-violet-600 text-sm">
           <span>ℹ️</span>
           <span>You will be asked questions based on your selections.</span>
         </div>
 
-        {/* Start button */}
+      
         <button
           onClick={handleStart}
           className="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 text-base shadow-md transition-colors"

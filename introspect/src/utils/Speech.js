@@ -1,39 +1,76 @@
 // utils/Speech.js
-// Wrappers for SpeechSynthesis and SpeechRecognition browser APIs
 
-// Speak text aloud using the browser's TTS
-export function speakText(text, onEnd) {
-  if (!window.speechSynthesis) return;
+let voicesLoaded = false;
+let cachedVoices = [];
 
-  // Cancel any ongoing speech
+function loadVoices() {
+  return new Promise((resolve) => {
+    const voices = window.speechSynthesis.getVoices();
+
+    if (voices.length > 0) {
+      cachedVoices = voices;
+      voicesLoaded = true;
+      resolve(voices);
+      return;
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {
+      cachedVoices = window.speechSynthesis.getVoices();
+      voicesLoaded = true;
+      resolve(cachedVoices);
+    };
+  });
+}
+
+
+export async function speakText(text, onEnd) {
+  if (!window.speechSynthesis || !text) return;
+
+
   window.speechSynthesis.cancel();
 
+  if (!voicesLoaded) {
+    await loadVoices();
+  }
+
   const utterance = new SpeechSynthesisUtterance(text);
+
   utterance.rate = 0.95;
   utterance.pitch = 1;
   utterance.volume = 1;
 
-  // Pick a good voice if available
-  const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find(
-    (v) => v.lang === "en-US" && v.name.includes("Google")
-  ) || voices.find((v) => v.lang === "en-US") || voices[0];
+  const voices = cachedVoices.length
+    ? cachedVoices
+    : window.speechSynthesis.getVoices();
 
-  if (preferred) utterance.voice = preferred;
+  const voice =
+    voices.find((v) => v.lang === "en-US") ||
+    voices.find((v) => v.lang?.includes("en")) ||
+    voices[0];
 
-  if (onEnd) utterance.onend = onEnd;
+  if (voice) utterance.voice = voice;
 
-  window.speechSynthesis.speak(utterance);
+  utterance.onend = () => {
+    if (onEnd) onEnd();
+  };
+
+  utterance.onerror = () => {
+    if (onEnd) onEnd();
+  };
+
+  setTimeout(() => {
+    window.speechSynthesis.speak(utterance);
+  }, 120);
 }
 
-// Stop any ongoing speech
+
 export function stopSpeaking() {
   if (window.speechSynthesis) {
     window.speechSynthesis.cancel();
   }
 }
 
-// Create a SpeechRecognition instance
+
 export function createRecognition() {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
